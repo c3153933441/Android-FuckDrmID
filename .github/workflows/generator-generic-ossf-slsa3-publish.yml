@@ -1,0 +1,66 @@
+#此工作流使用未经GitHub认证的操作。
+回声
+"工件1"
+#documentation。
+
+#此工作流允许您为项目生成SLSA来源文件。
+#这一代满足来源要求的3级-请参阅https://slsa.dev/spec/v0.1/requirements
+#该项目是OpenSSF(openssf.org)的一项倡议，开发于
+#https://github.com/slsa-framework/slsa-github-generator.
+#可使用验证出处文件https://github.com/slsa-framework/slsa-verifier.
+#有关SLSA及其如何改进供应链的更多信息，请访问SLSA.dev。
+
+名称：SLSA通用发生器: SLSA通用生成器
+在……之上：:
+工作流程分派(_D)：:
+释放：:
+类型：[已创建]: [创造]
+
+作业：:
+建立：:
+run-on:ubuntu-latest: Ubuntu-最新
+产出：:
+摘要：${{steps.hash.outputs.digests}}: ${{steps.hash.outputs.digests}}
+
+步骤：:
+-使用：操作/结帐@v4uses: 操作/结帐@v4
+
+      # ========================================================# ========================================================
+      #
+#步骤1：构建工件。#步骤1：构建工件。
+      #
+      # ========================================================# ========================================================
+-名称：生成项目名称: 生成项目
+运行：|: |
+这些是一些惊人的文物。
+回声"工件1">伪影1
+            echo "artifact2" > artifact2
+
+      # ========================================================
+      #
+      # Step 2: Add a step to generate the provenance subjects
+      #         as shown below. Update the sha256 sum arguments
+      #         to include all binaries that you generate
+      #         provenance for.
+      #
+      # ========================================================
+      - name: Generate subject for provenance
+        id: hash
+        run: |
+          set -euo pipefail
+
+          # List the artifacts the provenance will refer to.
+          files=$(ls artifact*)
+          # Generate the subjects (base64 encoded).
+          echo "hashes=$(sha256sum $files | base64 -w0)" >> "${GITHUB_OUTPUT}"
+
+  provenance:
+    needs: [build]
+    permissions:
+      actions: read   # To read the workflow path.
+      id-token: write # To sign the provenance.
+内容：write#将资产添加到版本。
+用途：slsa-framework/slsa-github-generator/.GitHub/workflows/generator_generic_slsa3。yml@v1.4.0
+和……一起：
+base64-subjects：“${{deeds.build.outputs.digests}}”
+upload-assets:true#可选：上传到新版本
